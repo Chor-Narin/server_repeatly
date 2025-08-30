@@ -1,74 +1,114 @@
-
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Multi-Browser Controller</title>
     <style>
-        body { font-family: Arial; padding: 20px; background: #f0f0f0; }
-        .controls { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
-        input, button { padding: 10px; margin: 5px; border-radius: 5px; border: 1px solid #ccc; }
-        button { background: #007bff; color: white; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        .status { padding: 10px; background: #d4edda; border-radius: 5px; margin: 10px 0; }
+      body {
+        font-family: Arial;
+        padding: 20px;
+        background: #f0f0f0;
+      }
+      .controls {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+      input,
+      button {
+        padding: 10px;
+        margin: 5px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      .status {
+        padding: 10px;
+        background: #d4edda;
+        border-radius: 5px;
+        margin: 10px 0;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="controls">
-        <h2>Multi-Browser Sync Controller</h2>
-        <input type="url" id="urlInput" placeholder="https://spinnertool.com" style="width: 300px;">
-        <input type="number" id="browserCount" value="5" min="1" max="100" style="width: 60px;">
-        <button onclick="openBrowsers()">Open Browsers</button>
-        <button onclick="refreshAll()">Refresh All</button>
-        <button onclick="startAutoRefresh()">Start Auto-Refresh (5s)</button>
-        <button onclick="stopAutoRefresh()">Stop Auto-Refresh</button>
-        <div class="status" id="status">Ready to launch browsers</div>
+      <h2>Multi-Browser Sync Controller</h2>
+      <input
+        type="url"
+        id="urlInput"
+        placeholder="https://spinnertool.com"
+        style="width: 300px"
+      />
+      <input
+        type="number"
+        id="browserCount"
+        value="5"
+        min="1"
+        max="100"
+        style="width: 60px"
+      />
+      <button onclick="openBrowsers()">Open Browsers</button>
+      <button onclick="refreshAll()">Refresh All</button>
+      <button onclick="startAutoRefresh()">Start Auto-Refresh (5s)</button>
+      <button onclick="stopAutoRefresh()">Stop Auto-Refresh</button>
+      <div class="status" id="status">Ready to launch browsers</div>
     </div>
 
     <script>
-        let browserWindows = [];
-        let autoRefreshInterval;
+      let browserWindows = [];
+      let autoRefreshInterval;
 
-        function openBrowsers() {
-            const url = document.getElementById('urlInput').value;
-            const count = parseInt(document.getElementById('browserCount').value);
-            
-            // Close existing windows
-            browserWindows.forEach(win => win && win.close());
-            browserWindows = [];
-            
-            // Open new browser windows
-            for(let i = 0; i < count; i++) {
-                const newWindow = window.open(url, `browser_${i}`, 'width=800,height=600,left=' + (i * 100) + ',top=' + (i * 50));
-                browserWindows.push(newWindow);
-            }
-            
-            document.getElementById('status').textContent = `Opened ${count} browser windows`;
+      function openBrowsers() {
+        const url = document.getElementById("urlInput").value;
+        const count = parseInt(document.getElementById("browserCount").value);
+
+        // Close existing tabs (if possible)
+        browserWindows.forEach((tab) => tab && tab.close());
+        browserWindows = [];
+
+        // Open new tabs in the same browser window
+        for (let i = 0; i < count; i++) {
+          const tab = window.open(url, `_blank`);
+          browserWindows.push(tab);
         }
 
-        function refreshAll() {
-            const url = document.getElementById('urlInput').value;
-            browserWindows.forEach(win => {
-                if(win && !win.closed) {
-                    win.location.href = url;
-                }
-            });
-            document.getElementById('status').textContent = 'All browsers refreshed';
-        }
+        document.getElementById(
+          "status"
+        ).textContent = `Opened ${count} browser tabs`;
+      }
 
-        function startAutoRefresh() {
-            stopAutoRefresh();
-            autoRefreshInterval = setInterval(refreshAll, 5000);
-            document.getElementById('status').textContent = 'Auto-refresh started (every 30 seconds)';
-        }
+      function refreshAll() {
+        const url = document.getElementById("urlInput").value;
+        browserWindows.forEach((win) => {
+          if (win && !win.closed) {
+            win.location.href = url;
+          }
+        });
+        document.getElementById("status").textContent =
+          "All browsers refreshed";
+      }
 
-        function stopAutoRefresh() {
-            if(autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
-                autoRefreshInterval = null;
-            }
-            document.getElementById('status').textContent = 'Auto-refresh stopped';
+      function startAutoRefresh() {
+        stopAutoRefresh();
+        autoRefreshInterval = setInterval(refreshAll, 5000);
+        document.getElementById("status").textContent =
+          "Auto-refresh started (every 30 seconds)";
+      }
+
+      function stopAutoRefresh() {
+        if (autoRefreshInterval) {
+          clearInterval(autoRefreshInterval);
+          autoRefreshInterval = null;
         }
+        document.getElementById('status').textContent = 'Auto-refresh started (every 5 seconds)';
+      }
     </script>
-</body>
+  </body>
 </html>
-            
