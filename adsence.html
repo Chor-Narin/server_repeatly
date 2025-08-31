@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wheel of Names - Random Name Picker</title>
+    <!-- AdSense script -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4896671601032729" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .wheel-container {
+            flex: 1;
+            max-width: 600px;
+        }
+        .wheel {
+            width: 300px;
+            height: 300px;
+            background: conic-gradient(red, blue, green, yellow, purple, orange);
+            border-radius: 50%;
+            margin: 0 auto;
+            transition: transform 2s ease-out;
+        }
+        .entries {
+            flex: 1;
+            padding: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+        .ad-container {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Wheel of Names</h1>
+    <p>Free and easy to use spinner. Enter names, spin wheel to pick a random winner.</p>
+    <div class="container">
+        <div class="wheel-container">
+            <div id="wheel" class="wheel"></div>
+            <button onclick="spinWheel()">Spin the Wheel</button>
+            <p id="result">Spin to pick a winner!</p>
+        </div>
+        <div class="entries">
+            <h2>Enter Names</h2>
+            <textarea id="nameInput" placeholder="Enter names, one per line"></textarea>
+            <button onclick="updateNames()">Update Names</button>
+        </div>
+    </div>
+    <div class="ad-container">
+        <h2>Advertisement</h2>
+        <!-- AdSense ad slot -->
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-4896671601032729"
+             data-ad-slot="9876543210"
+             data-ad-format="auto"></ins>
+        <!-- Simulated ad placeholder -->
+        <div id="simulated-ad">Loading ad...</div>
+    </div>
+
+    <script>
+        // Wheel spinner logic
+        let names = [];
+        function updateNames() {
+            const input = document.getElementById('nameInput').value;
+            names = input.split('\n').filter(name => name.trim() !== '');
+            document.getElementById('result').textContent = names.length ? 'Spin to pick a winner!' : 'Please enter at least one name.';
+        }
+
+        function spinWheel() {
+            if (names.length === 0) {
+                alert('Please enter at least one name!');
+                return;
+            }
+            const wheel = document.getElementById('wheel');
+            const randomDeg = Math.floor(Math.random() * 360) + 720; // Spin 2+ full rotations
+            wheel.style.transform = `rotate(${randomDeg}deg)`;
+            setTimeout(() => {
+                const winnerIndex = Math.floor((randomDeg % 360) / (360 / names.length));
+                const winner = names[winnerIndex] || names[0];
+                document.getElementById('result').textContent = `Winner: ${winner}!`;
+            }, 2000);
+        }
+
+        // Simulate AdSense ad request
+        async function fetchAd() {
+            const adRequestUrl = `http://localhost:8080/pagead/ads?client=ca-pub-4896671601032729&slot=9876543210&url=${encodeURIComponent('https://wheelofnames.com/')}&context=wheel_spinner_random_picker`;
+            try {
+                console.log('Sending ad request to:', adRequestUrl);
+                const response = await fetch(adRequestUrl, { mode: 'cors' });
+                const adData = await response.json();
+                console.log('Ad response:', adData);
+                const adContainer = document.getElementById('simulated-ad');
+                adContainer.innerHTML = adData.ad.html;
+                console.log('Tracking impression to:', adData.ad.tracking_url);
+            } catch (error) {
+                console.error('Ad request failed:', error);
+                document.getElementById('simulated-ad').textContent = 'Failed to load ad (check server or network).';
+            }
+        }
+
+        // Initialize
+        window.onload = () => {
+            // Simulate adsbygoogle.js behavior
+            fetchAd();
+            // Attempt to initialize real AdSense (if approved)
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        };
+    </script>
+</body>
+</html>
